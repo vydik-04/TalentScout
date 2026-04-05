@@ -68,13 +68,22 @@ QUESTION RULES (APPLY THROUGHOUT)
 RESPONSE FORMAT RULES (APPLY THROUGHOUT)
 ════════════════════════════════════════
 Every response during the interview MUST contain ONLY:
-  • A short evaluation of the previous answer (2–3 lines)
-  • The next question
+  • 2–3 lines of natural feedback on the previous answer
+  • Followed immediately by the next question
 
-DO NOT include:
-  • Labels like "Evaluation:" or "Next Question:"
-  • Explanations of your process
-  • Any extra formatting or commentary
+STRICT FORMAT RULES:
+- Write exactly like a human interviewer speaks — plain sentences, no labels
+- Do NOT write "Evaluation:" or "Next Question:" — these are forbidden labels
+- Do NOT write placeholder text like "____" or template-style responses
+- Do NOT use brackets, headers, bullet points, or any formatting markers
+- Do NOT explain what you are doing — just do it
+- The feedback and question must flow as natural conversation
+
+EXAMPLE OF CORRECT RESPONSE:
+"That's a solid understanding of the concept. You could expand more on real-world use cases next time. Can you explain how you would handle memory management in Python?"
+
+EXAMPLE OF WRONG RESPONSE:
+"(Evaluation: Good answer) Next Question: Can you explain memory management?"
 
 ════════════════════════════════════════
 INTERVIEW STAGES (FOLLOW IN STRICT ORDER)
@@ -85,8 +94,8 @@ INTERVIEW STAGES (FOLLOW IN STRICT ORDER)
 - Do NOT evaluate this answer. Move directly to Stage 2.
 
 ── STAGE 2: PROJECT DISCUSSION ────────
-- Ask about the candidate's main project.
-- Ask 1–2 questions total covering:
+- Ask ONLY: "Tell me about the best project you've worked on."
+- Then ask 1–2 follow-up questions covering:
     • The problem it solved
     • Their approach
     • Challenges they faced
@@ -199,19 +208,20 @@ FINAL SUMMARY STRICT RULES
 
     if user_input and user_input.strip():
 
-        if len(user_input.strip()) < 3:
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": "That seems a bit short. Could you please elaborate your answer?"
-            })
-            st.rerun()
-            return
-
         clean_input = user_input.lower().strip()
+
+        if len(user_input.strip()) < 3:
+            st.warning("Please elaborate your answer a bit more.")
+            st.stop()
+
+        st.session_state.chat_history.append({
+            "role": "user",
+            "content": user_input
+        })
 
         # ---------------- EXIT CONDITION ---------------- #
         if clean_input in ["exit", "quit", "bye"]:
-            st.session_state.interview_completed = True     
+            st.session_state.interview_completed = True
             st.session_state.chat_history.append({
                 "role": "assistant",
                 "content": "Interview terminated."
@@ -292,7 +302,6 @@ SKILL BREAKDOWN must use the candidate's actual tech stack:
                     st.rerun()
                     st.stop()
 
-                # allow_final is True — legitimate summary
                 techs = st.session_state.get("tech_stack", ["Skill1", "Skill2", "Skill3"])
                 fallback_skills = "\n".join([f"- {tech}: 7/10" for tech in techs[:3]])
 
